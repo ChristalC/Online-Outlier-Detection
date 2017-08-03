@@ -20,7 +20,6 @@
 pthread_cond_t has_new;
 pthread_mutex_t lock;
 list<vector<double>> shared_data;
-int point_count = 0;
 
 /* Function thread_org_func: initializes variables for the two thread functions. Create two thread functions.
  * Input: an integer window_size, two const char* host and port
@@ -123,7 +122,6 @@ void* socket_thread_func(void* argv) {
   char* recv_end_pos;
   char* buffer_start_pos = buffer;
   char* buffer_end_pos;
-  int num_points = 0;
   while ((numbytes = recv(sockfd, recv_buffer, MAX_BUF_LENGTH - 1, 0)) > 1) {
     recv_end_pos = recv_buffer + numbytes;
     *recv_end_pos = '\0';
@@ -145,8 +143,6 @@ void* socket_thread_func(void* argv) {
       }
       pthread_mutex_lock(&lock);
       shared_data.push_back(read_point);
-      num_points++;
-      cout << "point_count = " << num_points << endl;
       pthread_mutex_unlock(&lock);
 
       // Signal the has_new condition
@@ -194,7 +190,6 @@ void* lof_thread_func(void* ws) {
   
   list<vector<double>> new_points;
 
-  int handled_points = 0;
   while (true) {
     new_points.clear();
     // Wait for new point come to shared data
@@ -215,8 +210,6 @@ void* lof_thread_func(void* ws) {
       }
       // Add the new point to all_points list
       lof_data.addPoint(new_point_pos);
-      handled_points++;
-      cout << "Handled points: " << handled_points << endl;
     }
     
   }

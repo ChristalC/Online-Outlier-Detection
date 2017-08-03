@@ -41,6 +41,4 @@ class Lof {
     void changeGroupSize(int k_val);
     int decideGroupSize();
     double decideThreshold();
-
-    bool isOutlier(); // Decides is the last point of all_points is an outlier
 };
