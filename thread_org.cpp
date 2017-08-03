@@ -211,7 +211,7 @@ void* lof_thread_func(void* ws) {
       // Check if the first element of new_point_pos is -1
       // If yes, all data is processed, return the thread
       if (new_point_pos[0] == -1) {
-        break;
+        return NULL;
       }
       // Add the new point to all_points list
       lof_data.addPoint(new_point_pos);
