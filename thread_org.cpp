@@ -123,6 +123,7 @@ void* socket_thread_func(void* argv) {
   char* recv_end_pos;
   char* buffer_start_pos = buffer;
   char* buffer_end_pos;
+  int num_points = 0;
   while ((numbytes = recv(sockfd, recv_buffer, MAX_BUF_LENGTH - 1, 0)) > 1) {
     recv_end_pos = recv_buffer + numbytes;
     *recv_end_pos = '\0';
@@ -136,8 +137,6 @@ void* socket_thread_func(void* argv) {
       *buffer_end_pos = '\0';
       data_str = buffer;
       
-      cout << "data_str = " << data_str << endl;
-      
       // Split data_str into a vector of doubles, push the vector to shared_data list
       vector<double> read_point = splitCsv(data_str);
       if (read_point.size() == 0) {
@@ -146,8 +145,8 @@ void* socket_thread_func(void* argv) {
       }
       pthread_mutex_lock(&lock);
       shared_data.push_back(read_point);
-      point_count++;
-      cout << "point_count = " << point_count << endl;
+      num_points++;
+      cout << "point_count = " << num_points << endl;
       pthread_mutex_unlock(&lock);
 
       // Signal the has_new condition
@@ -193,58 +192,33 @@ void* lof_thread_func(void* ws) {
   int ws_int = *(int*)ws;
   Lof lof_data(ws_int);
   
-  vector<double> new_point_pos;
+  list<vector<double>> new_points;
 
+  int handled_points = 0;
   while (true) {
+    new_points.clear();
     // Wait for new point come to shared data
     pthread_mutex_lock(&lock);
     if (shared_data.empty()) {
       pthread_cond_wait(&has_new, &lock);
     }
-    new_point_pos = shared_data.front();
-    shared_data.pop_front();
-    point_count--;
-    cout << "point_count = " << point_count << endl;
+    new_points.swap(shared_data);
     pthread_mutex_unlock(&lock);
-    
-    // Check if the first element of new_point_pos is -1
-    // If yes, all data is processed, return the thread
-    if (new_point_pos[0] == -1) {
-      break;
-    }
-    // Add the new point to all_points list
-    lof_data.addPoint(new_point_pos);
 
-    // If group_size is fixed, which means decision is needed on if the new_point is an outlier
-    if (lof_data.getGroupSize() != 0) {
-      /*
-      if (lof_data.isOutlier()) {
-        cout << "Newly added point is an outlier." << endl;
-      }*/
-      lof_data.isOutlier();
-      lof_data.removeFrontPoint();
-    }
-    // If the group_size is not fixed, count if the new_point is outside the first window
-    // If it is, then we need to decide group_size and threshold at this point
-    // If not, no action or decision needed
-    else {  
-      if (lof_data.getPointCount() == ws_int + 1) {
-        int best_group_size = lof_data.decideGroupSize();
-        cout << "best_group_size = " << best_group_size << endl;
-        lof_data.changeGroupSize(best_group_size);
-
-        double th = lof_data.decideThreshold();
-        cout << "picked threshold = " << th << endl;
-        lof_data.setThreshold(th);
-
-        // Decide if the newly added point is an outlier based on group_size and threshold
-        lof_data.isOutlier();
-        // if (lof_data.isOutlier()) {
-          // cout << "Newly added point is an outlier." << endl;
-        // }
-        lof_data.removeFrontPoint();
+    auto it = new_points.begin();
+    for (; it != new_points.end(); it++) {
+      vector<double> new_point_pos = *it;
+      // Check if the first element of new_point_pos is -1
+      // If yes, all data is processed, return the thread
+      if (new_point_pos[0] == -1) {
+        break;
       }
+      // Add the new point to all_points list
+      lof_data.addPoint(new_point_pos);
+      handled_points++;
+      cout << "Handled points: " << handled_points << endl;
     }
+    
   }
   return NULL;
 }

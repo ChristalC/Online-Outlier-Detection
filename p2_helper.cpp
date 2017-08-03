@@ -69,17 +69,17 @@ vector<double> splitCsv(string ip) {
   vector<double> empty_vector;
   
   while (getline(ss, buf, ',')) {
-    if (isNum(buf)) {
-      double d = stod(buf, NULL);
-      if (d < 0) {
-        cout << "Detect negative point, invalid. " << endl;
-        return empty_vector;
-      }
-      out.push_back(d);
-    }
-    else {
+    size_t idx = 0;
+    double d = stod(buf, &idx);
+    if (idx < buf.size()) {
+      cout << "Detect invalid number. " << endl;
       return empty_vector;
     }
+    if (d < 0) {
+      cout << "Detect negative point, invalid. " << endl;
+      return empty_vector;
+    }
+    out.push_back(d);
   }
   return out;
 }
@@ -155,11 +155,4 @@ void displayPos(vector<double> pos) {
   }
   cout << endl;
 }
-
-
-
-
-
-
-
 

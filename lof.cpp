@@ -31,7 +31,7 @@ Lof::~Lof() {
  * The function calculates distance between new point and existing points, updates affected points
  * establishes neighbors of the new point.
  */
-void Lof::addPoint(vector<double> new_pos) {
+bool Lof::addPoint(vector<double> new_pos) {
   Point* new_point = new Point(new_pos);
   all_points.push_back(new_point);
   point_count++;
@@ -49,10 +49,40 @@ void Lof::addPoint(vector<double> new_pos) {
     (*it)->addNewNeighbor(new_point);
     new_point->insertNeighbor(*it);
   }
+  bool is_outlier = false;
   // If group_size is set (!= 0), update stats of the new point
+  // If group_size is fixed, which means decision is needed on if the new_point is an outlier
   if (group_size != 0) {
     new_point->updateStats();
+    /*
+    if (lof_data.isOutlier()) {
+      cout << "Newly added point is an outlier." << endl;
+    }*/
+    is_outlier = isOutlier();
+    removeFrontPoint();
   }
+  // If the group_size is not fixed, count if the new_point is outside the first window
+  // If it is, then we need to decide group_size and threshold at this point
+  // If not, no action or decision needed
+  else {  
+    if (getPointCount() == window_size + 1) {
+      int best_group_size = decideGroupSize();
+      cout << "best_group_size = " << best_group_size << endl;
+      changeGroupSize(best_group_size);
+
+      double th = decideThreshold();
+      cout << "picked threshold = " << th << endl;
+      setThreshold(th);
+
+      // Decide if the newly added point is an outlier based on group_size and threshold
+      is_outlier = isOutlier();
+      // if (lof_data.isOutlier()) {
+        // cout << "Newly added point is an outlier." << endl;
+      // }
+      removeFrontPoint();
+    }
+  }
+  return is_outlier;
 }
 
 /* Function removeFrontPoint

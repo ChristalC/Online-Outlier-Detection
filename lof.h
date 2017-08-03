@@ -34,7 +34,7 @@ class Lof {
     void setGroupSize(int gs) {group_size = gs;}
     void setThreshold(double t) {threshold = t;}
 
-    void addPoint(std::vector<double> new_pos);
+    bool addPoint(std::vector<double> new_pos);
     void removeFrontPoint();
 
 
