@@ -30,6 +30,7 @@ class Point {
     std::set<PointDistancePair> neighbors;
     int num_neighbors;  // always = total number of points - 1
     double kth_neighbor_distance;
+    // double ave_k_neighbor_distance;
     double ave_reachability_distance;
     double lof_val;
 
@@ -42,6 +43,7 @@ class Point {
     int getK() {return k;}
     int getNumNeighbors() {return num_neighbors;}
     double getKthNeighborDistance() {return kth_neighbor_distance;}
+    // double getAveKNeighborDistance() {return ave_k_neighbor_distance;}
     double getAveReachabilityDistance() {return ave_reachability_distance;}
     double getLofVal() {return lof_val;}
 
@@ -50,6 +52,7 @@ class Point {
     void setK(int k_val) {k = k_val;}
     void setNumNeighbors(int n) {num_neighbors = n;}
     void setKthNeighborDistance(double d) {kth_neighbor_distance = d;}
+    // void setAveKNeighborDistance(double ad) {ave_k_neighbor_distance = ad;}
     void setAveReachabilityDistance(double ar) {ave_reachability_distance = ar;}
     void setLofVal(double l) {lof_val = l;}
 
@@ -61,6 +64,7 @@ class Point {
     void displayPoint();  // Print the point position to stdout
 
     double calcKthNeighborDistance() const;
+    // double calcAveKDistance() const;
     double calcAveReachabilityDistance() const;
     double calcLof() const;
     

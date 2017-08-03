@@ -14,7 +14,7 @@ Point::Point(vector<double> new_pos) {
   dimension = new_pos.size();
   num_neighbors = 0;
   kth_neighbor_distance = 0;
-  // ave_k_neighbor_distance = 0;
+  ave_k_neighbor_distance = 0;
   ave_reachability_distance = 0;
   lof_val = 0;
 }
@@ -69,7 +69,7 @@ void Point::removeNeighbor(Point* remove_point) {
 void Point::updateStats() {
   if (num_neighbors >= k) {
     kth_neighbor_distance = calcKthNeighborDistance(); 
-    // ave_k_neighbor_distance = calcAveKDistance();
+    ave_k_neighbor_distance = calcAveKDistance();
     ave_reachability_distance = calcAveReachabilityDistance();
     lof_val = calcLof();
   }
@@ -89,7 +89,6 @@ double Point::calcKthNeighborDistance() const {
  * Input: None
  * Output: a double
  */
-/*
 double Point::calcAveKDistance() const {
   double sum = 0;
   auto it = neighbors.begin();
@@ -98,7 +97,6 @@ double Point::calcAveKDistance() const {
   }
   return sum / k;
 }
-*/
 
 /* Function calcAveReachablityDistance: computes the average reachability distance of point
  * Input: None
@@ -149,7 +147,7 @@ void Point::displayPoint() {
  * Output: reachability distance of p1 with respect to p2 = max{distance(p1, p2), ave_k_neighbor_distance of p2}
  */
 double Point::calcReachabilityDistance(const Point* p1, const Point* p2) const {
-  return max(distance(p1, p2), p2->kth_neighbor_distance);
+  return max(distance(p1, p2), p2->ave_k_neighbor_distance);
 }
 
 /* Static function distance

@@ -85,7 +85,7 @@ void Lof::changeGroupSize(int k_val) {
   while (it != all_points.end()) {
     (*it)->setK(k_val);
     (*it)->setKthNeighborDistance((*it)->calcKthNeighborDistance());
-    // (*it)->setAveKNeighborDistance((*it)->calcAveKDistance());
+    (*it)->setAveKNeighborDistance((*it)->calcAveKDistance());
     it++;
   }
   
@@ -111,9 +111,7 @@ int Lof::decideGroupSize() {
   double lof = 0;
   int max_lof_k = 0;
   int test_k = 2;
-  int group_num = 2;
-  while (group_num <= 10) {
-    test_k = window_size / group_num;
+  for (test_k = 2; test_k <= window_size / 2; test_k += window_size / 32) {
     changeGroupSize(test_k);
     lof = p->calcLof();
     if (lof > max_lof) {
@@ -121,7 +119,6 @@ int Lof::decideGroupSize() {
       max_lof_k = test_k;
     }
     // cout << "test_k = " << test_k << ", lof = " << lof <<endl;
-    group_num++;
   }
   // cout << "best k = " << max_lof_k << endl;
   return max_lof_k;
@@ -143,7 +140,7 @@ double Lof::decideThreshold() {
   sort(lof_vals.begin(), lof_vals.end());
   int mid_idx = window_size / 2;
   
-  double t = 1.8 * lof_vals[mid_idx];
+  double t = 3 * lof_vals[mid_idx];
   return t;
 }
 
