@@ -57,8 +57,8 @@ bool Lof::addPoint(vector<double> new_pos) {
     new_point->updateStats();
     double lof_val = new_point->getLofVal();
     if (lof_val > threshold) {
+      cout << "Found an outlier: ";
       new_point->displayPoint();
-      cout << "lof_val = " << lof_val << ", it is an outlier" << endl;
     }
     removeFrontPoint();
   }
@@ -76,8 +76,8 @@ bool Lof::addPoint(vector<double> new_pos) {
       // Decide if the newly added point is an outlier based on group_size and threshold
       double lof_val = new_point->getLofVal();
       if (lof_val > threshold) {
+        cout << "Found an outlier: ";
         new_point->displayPoint();
-        cout << "lof_val = " << lof_val << ", it is an outlier" << endl;
       }
       removeFrontPoint();
     }

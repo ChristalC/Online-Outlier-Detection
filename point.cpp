@@ -85,20 +85,6 @@ double Point::calcKthNeighborDistance() const {
   return it->dist;
 }
 
-/* Function calcAveKDistance: computes the average distance to a point's k nearest neighbors (v_k(x))
- * Input: None
- * Output: a double
- */
-/*
-double Point::calcAveKDistance() const {
-  double sum = 0;
-  auto it = neighbors.begin();
-  for (int i = 0; i < k; i++) {
-    sum += distance(this, it->p);
-  }
-  return sum / k;
-}
-*/
 
 /* Function calcAveReachablityDistance: computes the average reachability distance of point
  * Input: None
